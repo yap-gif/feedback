@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>feedback</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f4f4f4;
+        }
+        h1 {
+            color: #333;
+        }
+        #feedback-list {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background: rgb(255, 255, 255);
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+        .feedback-item {
+            border-bottom: 1px solid #ddd;
+            padding: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>feedback</h1>
+    <div id="feedback-list">loading......</div>
+
+    <script>
+        // 获取用户反馈数据
+        fetch("http://localhost:3000/feedbacks")
+            .then(response => response.json())
+            .then(data => {
+                const feedbackList = document.getElementById("feedback-list");
+                feedbackList.innerHTML = ""; // 清空初始内容
+
+                if (data.length === 0) {
+                    feedbackList.innerHTML = "<p>暂无反馈</p>";
+                    return;
+                }
+
+                // 遍历反馈数据并显示
+                data.forEach(item => {
+                    const div = document.createElement("div");
+                    div.classList.add("feedback-item");
+                    div.innerHTML = `<strong>${item.name}</strong> (${item.email}) <br> ${item.feedback} <br><small>${item.created_at}</small>`;
+                    feedbackList.appendChild(div);
+                });
+            })
+            .catch(error => {
+                console.error("Error fetching feedback:", error);
+                document.getElementById("feedback-list").innerHTML = "<p>无法加载反馈数据</p>";
+            });
+    </script>
+</body>
+</html>

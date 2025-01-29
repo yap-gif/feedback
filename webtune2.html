@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, shrink-to-fit=no">
+  <title>Feedpage</title>
+  <style>
+    
+    /* 多设备通用样式 */
+    :root {
+      --base-font-size: 16px;
+      --mobile-font-size: 14px;
+      --primary-color: #007bff;
+      --hover-color: #0056b3;
+    }
+
+    /* 页面全局样式 */
+    body {
+      margin: 0;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+      background: linear-gradient(10deg, #ff9a9a, #faf5c4, #e0fbc2, #c2fbf8, #e1c2fb, #ddc2fb, #fbc2e7);
+      background-size: 300% 300%;
+      animation: gradient 8s ease infinite;
+      position: relative;
+      padding: 20px;
+      box-sizing: border-box;
+    }
+
+    /* 优化移动端背景动画性能 */
+    @media (max-width: 768px) {
+      body {
+        animation: gradient 16s ease infinite;
+        background-size: 200% 200%;
+      }
+    }
+
+    /* 表单容器样式 */
+    .form-container {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 500px;
+      margin: 20px 0;
+      backdrop-filter: blur(5px);
+    }
+
+    .form-container h1 {
+      text-align: center;
+      color: #333;
+      margin: 0 0 20px;
+      font-size: 2rem;
+    }
+
+    /* 输入字段优化 */
+    .form-container input,
+    .form-container textarea {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 15px;
+      border: 2px solid #e0e0e0;
+      border-radius: 8px;
+      font-size: 1em;
+      transition: border-color 0.3s;
+    }
+
+    .form-container input:focus,
+    .form-container textarea:focus {
+      border-color: var(--primary-color);
+      outline: none;
+    }
+
+    /* 按钮优化 */
+    .form-container button {
+      width: 100%;
+      padding: 14px;
+      background: var(--primary-color);
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-size: 1.1em;
+      cursor: pointer;
+      transition: all 0.3s;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    .form-container button:hover,
+    .form-container button:active {
+      background: var(--hover-color);
+      transform: scale(0.98);
+    }
+
+    /* 反馈列表优化 */
+    #feedback-list {
+      background: rgba(255, 255, 255, 0.95);
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 700px;
+      margin: 20px 0;
+      backdrop-filter: blur(5px);
+    }
+
+    #feedback-list p {
+      margin: 15px 0;
+      padding: 15px;
+      background: rgba(240, 240, 240, 0.3);
+      border-radius: 8px;
+      line-height: 1.6;
+    }
+
+    /* 响应式设计优化 */
+    @media (max-width: 768px) {
+      :root {
+        --base-font-size: 14px;
+      }
+
+      body {
+        padding: 10px;
+      }
+
+      .form-container {
+        padding: 15px;
+      }
+
+      .form-container h1 {
+        font-size: 1.5rem;
+      }
+
+      #feedback-list {
+        padding: 15px;
+      }
+
+      #feedback-list p {
+        padding: 12px;
+        font-size: 0.9em;
+      }
+
+      .form-container button {
+        padding: 12px;
+        font-size: 1em;
+      }
+    }
+
+    @media (min-width: 1200px) {
+      .form-container,
+      #feedback-list {
+        max-width: 800px;
+      }
+    }
+
+    /* 动画优化 */
+    @keyframes gradient {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h1>WEBTUNE</h1>
+    <form id="feedback-form">
+      <label for="name">NAME</label>
+      <input type="text" id="name" name="name" placeholder="Your name" required>
+
+      <label for="email">Email</label>
+      <input type="email" id="email" name="email" placeholder="your@email.com" required>
+
+      <label for="feedback">Feedback</label>
+      <textarea id="feedback" name="feedback" placeholder="Share your feedback......" required></textarea>
+
+      <button type="submit">Submit</button>
+    </form>
+  </div>
+
+  <h2>All Feedback</h2>
+  <div id="feedback-list"></div>
+
+  <script>
+    // 增强的提交处理
+    document.getElementById('feedback-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      
+      const formData = {
+        name: document.getElementById('name').value.trim(),
+        email: document.getElementById('email').value.trim(),
+        feedback: document.getElementById('feedback').value.trim()
+      };
+
+      try {
+        const response = await fetch('http://localhost:3000/feedback', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(formData)
+        });
+
+        if (!response.ok) throw new Error('Submission failed');
+        
+        const data = await response.json();
+        alert(data.message);
+        document.getElementById('feedback-form').reset();
+        await loadFeedbacks();
+      } catch (error) {
+        console.error('Error:', error);
+        alert('Error submitting feedback. Please check your connection.');
+      }
+    });
+
+    // 增强的反馈加载
+    async function loadFeedbacks() {
+      try {
+        const response = await fetch('http://localhost:3000/feedback');
+        if (!response.ok) throw new Error('Failed to load');
+        
+        const data = await response.json();
+        const feedbackList = document.getElementById('feedback-list');
+        feedbackList.innerHTML = data.map(item => `
+          <p>
+            <strong>${item.name}</strong> 
+            <small>(${new Date(item.timestamp).toLocaleDateString()})</small><br>
+            ${item.feedback}
+          </p>
+        `).join('');
+      } catch (error) {
+        console.error('Error:', error);
+        alert(`Error details: ${error.message}`);
+        feedbackList.innerHTML = '<p>Unable to load feedback at this time.</p>';
+      }
+    }
+
+    // 初始加载
+    loadFeedbacks();
+
+    // 视口变化监听
+    let vh = window.innerHeight * 0.01;
+    document.documentElement.style.setProperty('--vh', `${vh}px`);
+
+    window.addEventListener('resize', () => {
+      vh = window.innerHeight * 0.01;
+      document.documentElement.style.setProperty('--vh', `${vh}px`);
+    });
+  </script>
+</body>
+</html>
